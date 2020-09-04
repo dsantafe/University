@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    <!-- Site -->
+    <link rel="stylesheet" href="~/Content/Site.css">
+    <script src="~/Scripts/Site.js"></script>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- ============================================================== -->
+        <!-- Sidebar -->
+        <!-- ============================================================== -->
+        <div class="bg-light border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <img src="~/Assets/angular-icon.svg" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+                University
+            </div>
+            <div class="list-group list-group-flush">
+                @if (Request.IsAuthenticated)
+                {
+
+                }
+                else
+                {
+                    @Html.ActionLink("Home", "Index", "Home", routeValues: null, htmlAttributes: new { @class = "list-group-item list-group-item-action bg-light" })
+                    @Html.ActionLink("About", "About", "Home", routeValues: null, htmlAttributes: new { @class = "list-group-item list-group-item-action bg-light" })
+                    @Html.ActionLink("Contact", "Contact", "Home", routeValues: null, htmlAttributes: new { @class = "list-group-item list-group-item-action bg-light" })
+                }
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Sidebar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page Content -->
+        <!-- ============================================================== -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <i class="fas fa-align-justify" id="menu-toggle"></i>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </nav>
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page Content -->
+        <!-- ============================================================== -->
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- Menu Toggle Script -->
+    <!-- ============================================================== -->
+    <script>
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

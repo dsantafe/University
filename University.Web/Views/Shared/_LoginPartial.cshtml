@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-nav ml-auto mt-2 mt-lg-0" }))
+    {
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "", "", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
+            </li>
+            <li class="nav-item">
+                <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "nav-link" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "nav-link" })</li>
+    </ul>
+}
+
+<i class="fa fa-sign-out" aria-hidden="true"></i>
