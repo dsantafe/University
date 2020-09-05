@@ -9,6 +9,7 @@ using University.BL.Services.Implements;
 
 namespace University.Web.Controllers
 {
+    //[Authorize]
     public class InstructorsController : Controller
     {
         private UniversityContext _universityContext;

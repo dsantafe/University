@@ -1,15 +1,20 @@
-﻿using Microsoft.AspNet.Identity.Owin;
+﻿using AutoMapper;
+using Microsoft.AspNet.Identity.Owin;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using University.BL.Data;
+using University.BL.DTOs;
 using University.BL.Models;
 using University.BL.Repositories.Implements;
 using University.BL.Services.Implements;
 
 namespace University.Web.Controllers
 {
+    //[Authorize]
     public class CoursesController : Controller
     {
         private UniversityContext _universityContext;
@@ -26,12 +31,30 @@ namespace University.Web.Controllers
             }
         }
 
+        private IMapper mapper;
+
+        public CoursesController()
+        {
+            this.mapper = MvcApplication.MapperConfiguration.CreateMapper();
+        }
+
         // GET: Courses
         public async Task<ActionResult> Index()
         {
             var courseService = new CourseService(new CourseRepository(UniversityContext));
-            return View(await courseService.GetAll()); //SELECT * FROM Course
+
+            var listCourses = await courseService.GetAll();
+            var listCoursesDTO = listCourses.Select(x => mapper.Map<CourseDTO>(x));
+
+            return View(listCoursesDTO.ToList()); //SELECT * FROM Course
         }
+
+        //public static CourseDTO CourseToDTO(Course course) => new CourseDTO
+        //{
+        //    CourseID = course.CourseID,
+        //    Title = course.Title,
+        //    Credits = course.Credits
+        //};
 
         // GET: Courses/Details/5
         public async Task<ActionResult> Details(int? id)
@@ -42,13 +65,16 @@ namespace University.Web.Controllers
             }
 
             var courseService = new CourseService(new CourseRepository(UniversityContext));
-            Course course = await courseService.GetById(id.Value); //SELECT * FROM Course WHERE CourseID = id
+            var course = await courseService.GetById(id.Value); //SELECT * FROM Course WHERE CourseID = id            
 
             if (course == null)
             {
                 return HttpNotFound();
             }
-            return View(course);
+
+            var courseDTO = mapper.Map<CourseDTO>(course);
+
+            return View(courseDTO);
         }
 
         // GET: Courses/Create
@@ -62,18 +88,25 @@ namespace University.Web.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public async Task<ActionResult> Create(CourseDTO courseDTO)
         {
             if (ModelState.IsValid)
             {
-                //INSERT INTO Course VALUES(CourseID,Title,Credits)
                 var courseService = new CourseService(new CourseRepository(UniversityContext));
-                course = await courseService.Insert(course);
+                try
+                {
+                    var course = mapper.Map<Course>(courseDTO);
 
-                return RedirectToAction("Index");
+                    course = await courseService.Insert(course); //INSERT INTO Course VALUES(CourseID,Title,Credits)
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.InnerException.InnerException.Message);
+                }
             }
 
-            return View(course);
+            return View(courseDTO);
         }
 
         // GET: Courses/Edit/5
@@ -86,12 +119,15 @@ namespace University.Web.Controllers
 
             var courseService = new CourseService(new CourseRepository(UniversityContext));
             Course course = await courseService.GetById(id.Value); //SELECT * FROM Course WHERE CourseID = id
-            
+
             if (course == null)
             {
                 return HttpNotFound();
             }
-            return View(course);
+
+            var courseDTO = mapper.Map<CourseDTO>(course);
+
+            return View(courseDTO);
         }
 
         // POST: Courses/Edit/5
@@ -99,17 +135,19 @@ namespace University.Web.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public async Task<ActionResult> Edit(CourseDTO courseDTO)
         {
             if (ModelState.IsValid)
             {
                 //UPDATE Course SET Title,Credits WHERE CourseID = CourseID
                 var courseService = new CourseService(new CourseRepository(UniversityContext));
+
+                var course = mapper.Map<Course>(courseDTO);
                 course = await courseService.Update(course);
 
                 return RedirectToAction("Index");
             }
-            return View(course);
+            return View(courseDTO);
         }
 
         // GET: Courses/Delete/5
@@ -127,7 +165,10 @@ namespace University.Web.Controllers
             {
                 return HttpNotFound();
             }
-            return View(course);
+
+            var courseDTO = mapper.Map<CourseDTO>(course);
+
+            return View(courseDTO);
         }
 
         // POST: Courses/Delete/5
@@ -135,9 +176,23 @@ namespace University.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            //DELETE FROM Course WHERE CourseID = id
             var courseService = new CourseService(new CourseRepository(UniversityContext));
-            await courseService.Delete(id);
+
+            try
+            {
+                if (!await courseService.DeleteCheckOnEntity(id))
+                    await courseService.Delete(id); //DELETE FROM Course WHERE CourseID = id
+                else
+                    throw new Exception("ForeignKeys");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var course = await courseService.GetById(id);
+                var courseDTO = mapper.Map<CourseDTO>(course);
+
+                return View("Delete", courseDTO);
+            }
 
             return RedirectToAction("Index");
         }
