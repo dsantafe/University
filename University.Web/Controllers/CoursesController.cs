@@ -11,6 +11,7 @@ using University.BL.DTOs;
 using University.BL.Models;
 using University.BL.Repositories.Implements;
 using University.BL.Services.Implements;
+using PagedList;
 
 namespace University.Web.Controllers
 {
@@ -39,14 +40,18 @@ namespace University.Web.Controllers
         }
 
         // GET: Courses
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int? pageSize, int? page)
         {
             var courseService = new CourseService(new CourseRepository(UniversityContext));
 
             var listCourses = await courseService.GetAll();
             var listCoursesDTO = listCourses.Select(x => mapper.Map<CourseDTO>(x));
 
-            return View(listCoursesDTO.ToList()); //SELECT * FROM Course
+            pageSize = (pageSize ?? 10);
+            page = (page ?? 1);
+            ViewBag.PageSize = pageSize;
+
+            return View(listCoursesDTO.ToPagedList(page.Value, pageSize.Value)); //SELECT * FROM Course
         }
 
         //public static CourseDTO CourseToDTO(Course course) => new CourseDTO

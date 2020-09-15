@@ -15,5 +15,6 @@ namespace University.BL.Models
         public DateTime HireDate { get; set; }
 
         public ICollection<CourseInstructor> CourseInstructors { get; set; }
+        public OfficeAssignment OfficeAssignment { get; set; }
     }
 }

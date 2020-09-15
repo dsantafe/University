@@ -1,4 +1,4 @@
-﻿@model IEnumerable<University.BL.Models.Instructor>
+﻿@model IEnumerable<University.BL.DTOs.InstructorDTO>
 
 @{
     ViewBag.Title = "Index";
@@ -11,6 +11,7 @@
 </p>
 <table class="table">
     <tr>
+        <th></th>
         <th>
             @Html.DisplayNameFor(model => model.LastName)
         </th>
@@ -23,23 +24,52 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstMidName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.HireDate)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink("Select", "Index", new { id = item.ID })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstMidName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HireDate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
 
 </table>
+
+@if (ViewBag.Courses != null)
+{
+    var courses = (IEnumerable<University.BL.DTOs.CourseDTO>)ViewBag.Courses;
+
+    <h3>Courses Instructor</h3>
+    <hr />
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <td>Title</td>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in courses)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(m => item.Title)</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}

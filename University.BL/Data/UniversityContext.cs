@@ -14,6 +14,7 @@ namespace University.BL.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<CourseInstructor> CourseInstructors { get; set; }
+        public DbSet<OfficeAssignment> OfficeAssignments { get; set; }
 
         public static UniversityContext Create()
         {
